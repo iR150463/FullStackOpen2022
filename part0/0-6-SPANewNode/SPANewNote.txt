@@ -1,0 +1,14 @@
+title 0.6 New Note (SPA)
+
+note over browser:
+Creates note, rerender,
+and prevents the GET request
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server:
+Adds note to the notes list
+end note
+
+server-->browser: Confirmation message: "note created"
