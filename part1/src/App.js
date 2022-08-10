@@ -4,12 +4,21 @@ const Header = (props) => {
   )
 }
 
+const Part = (props) => {
+  return (
+    <p>{props.part} {props.exercises}</p>
+  )
+}
+
 const Content = (props) => {
+  var parts = [];
+  for (var i in props.parts) {
+    parts.push(<Part part={props.parts[i]} exercises={props.exercises[i]}/>)
+  }
+
   return (
     <>
-      <p>{props.part[0]} {props.exercises[0]}</p>
-      <p>{props.part[1]} {props.exercises[1]}</p>
-      <p>{props.part[2]} {props.exercises[2]}</p>
+      {parts}
     </>
   )
 }
