@@ -1,11 +1,26 @@
 import {useState} from "react";
 
+const Statistics = (props) => {
+  const {goodFb, neuFb, badFb} = props;
+  const allFb = goodFb + neuFb + badFb;
+
+  return (
+    <div id="statisticsDiv">
+      <h1>statistics</h1>
+      <p>good {goodFb}</p>
+      <p>neutral {neuFb}</p>
+      <p>bad {badFb}</p>
+      <p>all {allFb}</p>
+      <p>average {(goodFb - badFb) / allFb}</p>
+      <p>positive {100 * goodFb / allFb}%</p>
+    </div>
+  )
+}
+
 function App() {
   const [goodFb, setGoodFb] = useState(0);
   const [neuFb, setNeuFb] = useState(0);
   const [badFb, setBadFb] = useState(0);
-
-  const allFb = goodFb + neuFb + badFb;
 
   return (
     <div className="App">
@@ -15,15 +30,7 @@ function App() {
         <button onClick={()=>{setNeuFb(neuFb+1)}}>neutral</button>
         <button onClick={()=>{setBadFb(badFb+1)}}>bad</button>
       </div>
-      <div id="statisticsDiv">
-        <h1>statistics</h1>
-        <p>good {goodFb}</p>
-        <p>neutral {neuFb}</p>
-        <p>bad {badFb}</p>
-        <p>all {allFb}</p>
-        <p>average {(goodFb - badFb) / allFb}</p>
-        <p>positive {100 * goodFb / allFb}%</p>
-      </div>
+      <Statistics goodFb={goodFb} neuFb={neuFb} badFb={badFb}/>
     </div>
   );
 }
