@@ -5,6 +5,8 @@ function App() {
   const [neuFb, setNeuFb] = useState(0);
   const [badFb, setBadFb] = useState(0);
 
+  const allFb = goodFb + neuFb + badFb;
+
   return (
     <div className="App">
       <div id="feedBackDiv">
@@ -18,6 +20,9 @@ function App() {
         <p>good {goodFb}</p>
         <p>neutral {neuFb}</p>
         <p>bad {badFb}</p>
+        <p>all {allFb}</p>
+        <p>average {(goodFb - badFb) / allFb}</p>
+        <p>positive {100 * goodFb / allFb}%</p>
       </div>
     </div>
   );
