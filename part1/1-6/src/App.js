@@ -4,6 +4,15 @@ const Statistics = (props) => {
   const {goodFb, neuFb, badFb} = props;
   const allFb = goodFb + neuFb + badFb;
 
+  if (allFb === 0) {
+    return (
+      <div id="statisticsDiv">
+        <h1>statistics</h1>
+        <p>No feedback given</p>
+      </div>
+    )
+  }
+
   return (
     <div id="statisticsDiv">
       <h1>statistics</h1>
