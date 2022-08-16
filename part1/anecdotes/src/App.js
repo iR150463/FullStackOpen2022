@@ -20,13 +20,26 @@ const App = () => {
     setUpvotes(copy);
   }
 
+  let mostUpvoted = 0;
+  for (let i=0; i<anecdotes.length; i++) {
+    if (upvotes[mostUpvoted] < upvotes[i]) mostUpvoted = i;
+  }
+
   return (
-    <div>
-      <p>{anecdotes[selected]}</p>
-      <p>has {upvotes[selected]} votes</p>
-      <button onClick={upvote}>vote</button>
-      <button onClick={()=>{setSelected(Math.floor(Math.random() * anecdotes.length))}}>next anecdote</button>
-    </div>
+    <>
+      <div>
+        <h1>Anecdote of the day</h1>
+        <p>{anecdotes[selected]}</p>
+        <p>has {upvotes[selected]} votes</p>
+        <button onClick={upvote}>vote</button>
+        <button onClick={()=>{setSelected(Math.floor(Math.random() * anecdotes.length))}}>next anecdote</button>
+      </div>
+      <div>
+        <h1>Anecdote with most upvote</h1>
+        <p>{anecdotes[mostUpvoted]}</p>
+        <p>has {upvotes[mostUpvoted]} votes</p>
+      </div>
+    </>
   )
 }
 
