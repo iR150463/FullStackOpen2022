@@ -1,14 +1,13 @@
 import './App.css';
 import { useState } from 'react'
 
-const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567' }
-  ]);
+const Filter = ({searchEntry, setSearchEntry}) => {
+  return <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
+}
+
+const PersonForm = ({persons, setPersons}) => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
-
-  const [searchEntry, setSearchEntry] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,19 +23,39 @@ const App = () => {
   }
 
   return (
+    <form onSubmit={handleSubmit}>
+      <div> name: <input value={newName} onChange={(e)=>{setNewName(e.target.value)}} /> </div>
+      <div> number: <input value={newNumber} onChange={(e)=>{setNewNumber(e.target.value)}} /> </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+
+const Persons = ({persons, searchEntry}) => {
+  return (
+    <>
+      {persons.filter(x=>x.name.includes(searchEntry)).map(x=><p key={x.name}>{x.name} {x.number}</p>)}
+    </>
+  )
+}
+
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-1234567' }
+  ]);
+
+  const [searchEntry, setSearchEntry] = useState('');
+
+  return (
     <div>
       <h2>Phonebook</h2>
-      <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
+      <Filter searchEntry={searchEntry} setSearchEntry={setSearchEntry} />
       <h2>add a new</h2>
-      <form onSubmit={handleSubmit}>
-        <div> name: <input value={newName} onChange={(e)=>{setNewName(e.target.value)}} /> </div>
-        <div> number: <input value={newNumber} onChange={(e)=>{setNewNumber(e.target.value)}} /> </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm persons={persons} setPersons={setPersons} />
       <h2>Numbers</h2>
-      {persons.filter(x=>x.name.includes(searchEntry)).map(x=><p key={x.name}>{x.name} {x.number}</p>)}
+      <Persons persons={persons} searchEntry={searchEntry} />
     </div>
   )
 }
