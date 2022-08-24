@@ -8,6 +8,8 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
 
+  const [searchEntry, setSearchEntry] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -24,6 +26,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
+      <h2>add a new</h2>
       <form onSubmit={handleSubmit}>
         <div> name: <input value={newName} onChange={(e)=>{setNewName(e.target.value)}} /> </div>
         <div> number: <input value={newNumber} onChange={(e)=>{setNewNumber(e.target.value)}} /> </div>
@@ -32,7 +36,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map(x=><p key={x.name}>{x.name} {x.number}</p>)}
+      {persons.filter(x=>x.name.includes(searchEntry)).map(x=><p key={x.name}>{x.name} {x.number}</p>)}
     </div>
   )
 }
