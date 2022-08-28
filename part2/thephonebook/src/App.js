@@ -1,5 +1,6 @@
 import './App.css';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Filter = ({searchEntry, setSearchEntry}) => {
   return <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
@@ -42,11 +43,18 @@ const Persons = ({persons, searchEntry}) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567' }
-  ]);
-
+  const [persons, setPersons] = useState([]);
   const [searchEntry, setSearchEntry] = useState('');
+
+  useEffect(()=> {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
 
   return (
     <div>
