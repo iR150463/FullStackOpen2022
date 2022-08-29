@@ -2,33 +2,37 @@ import axios from 'axios'
 import {useEffect, useState} from 'react'
 import "./App.css"
 
-const Filter = ({setFilter, filter}) => {
+const Filter = ({setQuery, query}) => {
   return (
     <>
-      Find Countries: <input type="text" value={filter} onChange={(e)=>{setFilter(e.target.value)}}></input>
+      Find Countries: <input type="text" value={query} onChange={(e)=>{setQuery(e.target.value)}}></input>
     </>
   )
 }
 
-const ResultDisplay = ({countries, filter}) => {
-  if (filter === "") {
+const ResultDisplay = ({countries, query, setQuery}) => {
+  if (query === "") {
     return (
       <p>Type in query to search country...</p>
     )
   }
 
-  const result = countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()));
+  const result = countries.filter(country => country.name.toLowerCase().includes(query.toLowerCase()));
 
   if (result.length > 10) {
     return (
-      <p>"Too many matches, specify another filter."</p>
+      <p>"Too many matches, specify another query."</p>
     )
   }
 
   if (result.length > 1) {
     let arr = [];
     for (let country of result) {
-      arr.push(<p key={country.name}>{country.name}</p>)
+      arr.push(
+      <div key={country.name}>
+        {country.name} <button onClick={()=>{setQuery(country.name)}}>show</button>
+      </div>
+      )
     }
 
     return <>{arr}</>
@@ -66,7 +70,7 @@ const ResultDisplay = ({countries, filter}) => {
 
 const App = () => {
   const [countries, setCountries] = useState([])
-  const [filter, setFilter] = useState('')
+  const [query, setQuery] = useState('')
 
   useEffect(()=>{
     axios
@@ -85,8 +89,8 @@ const App = () => {
 
   return (
     <div className="App">
-      <Filter setFilter={setFilter} filter={filter} />
-      <ResultDisplay countries={countries} filter={filter} />
+      <Filter setQuery={setQuery} query={query} />
+      <ResultDisplay countries={countries} query={query} setQuery={setQuery} />
     </div>
   );
 }
