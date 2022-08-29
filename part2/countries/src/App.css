@@ -1,4 +1,7 @@
-.flag {
+.pic {
     font-size: 200px;
-    margin: auto;
+    width: 200px;
+    margin-left: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

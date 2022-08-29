@@ -2,10 +2,35 @@ import axios from 'axios'
 import {useEffect, useState} from 'react'
 import "./App.css"
 
+const WEATHER_API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+
 const Filter = ({setQuery, query}) => {
   return (
     <>
       Find Countries: <input type="text" value={query} onChange={(e)=>{setQuery(e.target.value)}}></input>
+    </>
+  )
+}
+
+const WeatherDisplay = ({place, coords}) => {
+  const [weather, setWeather] = useState(undefined)
+
+  useEffect(()=>{
+    axios
+      .get(`https://api.openweathermap.org/data/3.0/onecall?lat=${coords[0]}&lon=${coords[1]}&appid=${WEATHER_API_KEY}`)
+      .then(res => {
+        setWeather(res.data.current)
+      })
+  }, [coords])
+
+  if (weather === undefined) return (<p>Fetching weather API...</p>)
+
+  return (
+    <>
+      <h3>Weather in {place}</h3>
+      <p>Temperature {weather.temp} Celcius</p>
+      <img className="pic" src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} />
+      <p>Wind {weather.wind_speed} m/s</p>
     </>
   )
 }
@@ -56,7 +81,9 @@ const ResultDisplay = ({countries, query, setQuery}) => {
         <h3>languages</h3>
         <ul>{languages.map(l => <li key={l}>{l}</li>)}</ul>
 
-        <p className="flag">{country.flag}</p>
+        <p className="pic">{country.flag}</p>
+
+        <WeatherDisplay place={country.capital} coords={country.capitalCoords}/>
       </>
     )
   }
@@ -82,7 +109,8 @@ const App = () => {
           capital: country.capital,
           area: country.area,
           languages: country.languages,
-          flag: country.flag
+          flag: country.flag,
+          capitalCoords: country.capitalInfo.latlng,
         }}))
       })
   }, [])
