@@ -1,6 +1,6 @@
 import './App.css';
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import nodeService from './notes'
 
 const Filter = ({searchEntry, setSearchEntry}) => {
   return <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
@@ -19,8 +19,8 @@ const PersonForm = ({persons, setPersons}) => {
       const newPerson = { name: newName, number: newNumber };
       setPersons(persons.concat(newPerson));
 
-      axios
-        .post('http://localhost:3001/persons', newPerson)
+      nodeService
+        .create(newPerson)
         .then(res => {console.log(res)})
     }
 
@@ -53,11 +53,11 @@ const App = () => {
 
   useEffect(()=> {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+    nodeService
+      .getAll()
       .then(response => {
         console.log('promise fulfilled')
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
