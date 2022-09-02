@@ -17,11 +17,12 @@ const PersonForm = ({persons, setPersons}) => {
       alert(`${newName} is already added to phonebook`);
     } else {
       const newPerson = { name: newName, number: newNumber };
-      setPersons(persons.concat(newPerson));
 
-      nodeService
-        .create(newPerson)
-        .then(res => {console.log(res)})
+      nodeService.create(newPerson).then(()=>{
+        nodeService
+          .getAll()
+          .then(res => {setPersons(res)})
+      })
     }
 
     setNewName('');
@@ -39,10 +40,19 @@ const PersonForm = ({persons, setPersons}) => {
   )
 }
 
-const Persons = ({persons, searchEntry}) => {
+const Persons = ({persons, searchEntry, deletePerson}) => {
   return (
     <>
-      {persons.filter(x=>x.name.includes(searchEntry)).map(x=><p key={x.name}>{x.name} {x.number}</p>)}
+      {persons
+        .filter(x=>x.name.includes(searchEntry))
+        .map(x=>{
+          return (
+            <p key={x.name}>
+              {x.name} {x.number} <button onClick={()=>{deletePerson(x.id, x.name)}}>Delete</button>
+            </p>
+          )
+        })
+      }
     </>
   )
 }
@@ -55,11 +65,16 @@ const App = () => {
     console.log('effect')
     nodeService
       .getAll()
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response)
-      })
+      .then(res => {setPersons(res)})
   }, [])
+
+  const deletePerson = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      nodeService
+        .deleteById(id)
+        .then(()=>{setPersons(persons.filter(p => p.id !== id))})
+    }
+  }
 
   return (
     <div>
@@ -68,7 +83,7 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm persons={persons} setPersons={setPersons} />
       <h2>Numbers</h2>
-      <Persons persons={persons} searchEntry={searchEntry} />
+      <Persons persons={persons} searchEntry={searchEntry} deletePerson={deletePerson} />
     </div>
   )
 }
