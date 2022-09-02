@@ -13,17 +13,28 @@ const PersonForm = ({persons, setPersons}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (persons.some(x => x.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-    } else {
-      const newPerson = { name: newName, number: newNumber };
+    for (let p of persons) {
+      if (p.name === newName && window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        nodeService
+        .update(p.id, { name: newName, number: newNumber })
+        .then(()=>{
+          nodeService
+            .getAll()
+            .then(res => {setPersons(res)});
+        })
 
-      nodeService.create(newPerson).then(()=>{
+        return;
+      }
+    }
+
+    nodeService
+      .create({ name: newName, number: newNumber })
+      .then(()=>{
         nodeService
           .getAll()
-          .then(res => {setPersons(res)})
-      })
-    }
+          .then(res => {setPersons(res)});
+    })
+
 
     setNewName('');
     setNewNumber('');
@@ -62,7 +73,6 @@ const App = () => {
   const [searchEntry, setSearchEntry] = useState('');
 
   useEffect(()=> {
-    console.log('effect')
     nodeService
       .getAll()
       .then(res => {setPersons(res)})
