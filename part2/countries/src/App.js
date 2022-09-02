@@ -26,6 +26,8 @@ const WeatherDisplay = ({place, coords}) => {
   if (weather === undefined) return (<p>Fetching weather API...</p>)
 
   return (
+
+    
     <>
       <h3>Weather in {place}</h3>
       <p>Temperature {weather.temp} Celcius</p>

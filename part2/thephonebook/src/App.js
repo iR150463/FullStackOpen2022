@@ -16,7 +16,12 @@ const PersonForm = ({persons, setPersons}) => {
     if (persons.some(x => x.name === newName)) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
+      const newPerson = { name: newName, number: newNumber };
+      setPersons(persons.concat(newPerson));
+
+      axios
+        .post('http://localhost:3001/persons', newPerson)
+        .then(res => {console.log(res)})
     }
 
     setNewName('');
