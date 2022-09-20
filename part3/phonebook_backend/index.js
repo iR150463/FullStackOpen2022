@@ -68,16 +68,23 @@ app.post('/api/persons', (req, res) => {
     const note = {"id": Math.floor(Math.random() * 10000000), ...req.body};
 
     if (!note.name && !note.number) {
-        res.json({ error: 'name and number are missing' })
+        return res.status(400).json({ 
+            error: 'name and number are missing'
+        })
     } else if (!note.name) {
-        res.json({ error: 'name is missing' })
+        return res.status(400).json({ 
+            error: 'name is missing'
+        })
     } else if (!note.number) {
-        res.json({ error: 'number is missing' })
+        return res.status(400).json({ 
+            error: 'number is missing'
+        })
     } else {
         for (let oldNote of notes) {
             if (oldNote.name == note.name) {
-                res.json({ error: 'name must be unique' });
-                return;
+                return res.status(400).json({ 
+                    error: 'name must be unique'
+                })
             }
         }
 
