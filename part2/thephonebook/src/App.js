@@ -1,71 +1,142 @@
 import './App.css';
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import nodeService from './notes'
+
+const Notification = ({ message }) => {
+    if (message === null) { return null }
+
+    const className = 'error ' + (message.successful ? "successful" : "unsuccessful");
+    return ( <div className={className}>{message.text}</div> )
+}
 
 const Filter = ({searchEntry, setSearchEntry}) => {
-  return <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
+    return <div>filter shown with <input value={searchEntry} onChange={(e)=>{setSearchEntry(e.target.value)}} /> </div>
 }
 
-const PersonForm = ({persons, setPersons}) => {
-  const [newName, setNewName] = useState('');
-  const [newNumber, setNewNumber] = useState('');
+const PersonForm = ({persons, setPersons, setMessage}) => {
+    const [newName, setNewName] = useState('');
+    const [newNumber, setNewNumber] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-    if (persons.some(x => x.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-    } else {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
-    }
+        for (let p of persons) {
+            if (p.name === newName) {
+                if ( window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`) ) {
+                    nodeService
+                    .update(p.id, { name: newName, number: newNumber })
+                    .then(()=>{
+                        nodeService
+                            .getAll()
+                            .then(res => {
+                                setPersons(res);
+                                setNewName('');
+                                setNewNumber('');
+                            })
+                    })
+                    .then(()=>{
+                        setMessage({ text: "Form updated!", successful: true });
+                        setTimeout(()=>{
+                            setMessage(null);
+                        }, 5000);
+                    })
+                    .catch(error => {
+                        setMessage({ text: `${p.name} is already deleted from the server.`, successful: false });
+                        setTimeout(()=>{
+                            setMessage(null);
+                        }, 5000);
+                    })
+    
+                    return;
+                } else {
+                    return;
+                }
+            }
+        }
 
-    setNewName('');
-    setNewNumber('');
+        nodeService
+            .create({ name: newName, number: newNumber })
+            .then(()=>{
+                nodeService
+                .getAll()
+                .then(res => {
+                    setPersons(res);
+                    setNewName('');
+                    setNewNumber('');
+                })
+            })
+            .then(()=>{
+                setMessage({ text: "Person added!", successful: true });
+                setTimeout(()=>{
+                    setMessage(null);
+                }, 5000);
+            });
   }
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <div> name: <input value={newName} onChange={(e)=>{setNewName(e.target.value)}} /> </div>
-      <div> number: <input value={newNumber} onChange={(e)=>{setNewNumber(e.target.value)}} /> </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
+    return (
+        <form onSubmit={handleSubmit}>
+        <div> name: <input value={newName} onChange={(e)=>{setNewName(e.target.value)}} /> </div>
+        <div> number: <input value={newNumber} onChange={(e)=>{setNewNumber(e.target.value)}} /> </div>
+        <div>
+            <button type="submit">add</button>
+        </div>
+        </form>
+    )
 }
 
-const Persons = ({persons, searchEntry}) => {
-  return (
-    <>
-      {persons.filter(x=>x.name.includes(searchEntry)).map(x=><p key={x.name}>{x.name} {x.number}</p>)}
-    </>
-  )
+const Persons = ({persons, searchEntry, deletePerson}) => {
+    return (
+        <>
+        {persons
+            .filter(x=>x.name.includes(searchEntry))
+            .map(x=>{
+            return (
+                <p key={x.name}>
+                {x.name} {x.number} <button onClick={()=>{deletePerson(x.id, x.name)}}>Delete</button>
+                </p>
+            )
+            })
+        }
+        </>
+    )
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [searchEntry, setSearchEntry] = useState('');
+    const [persons, setPersons] = useState([]);
+    const [searchEntry, setSearchEntry] = useState('');
+    const [message, setMessage] = useState(null)
 
-  useEffect(()=> {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })
-  }, [])
+    useEffect(()=> {
+        nodeService
+        .getAll()
+        .then(res => {setPersons(res)})
+    }, [])
 
-  return (
-    <div>
-      <h2>Phonebook</h2>
-      <Filter searchEntry={searchEntry} setSearchEntry={setSearchEntry} />
-      <h2>add a new</h2>
-      <PersonForm persons={persons} setPersons={setPersons} />
-      <h2>Numbers</h2>
-      <Persons persons={persons} searchEntry={searchEntry} />
-    </div>
-  )
+    const deletePerson = (id, name) => {
+        if (window.confirm(`Delete ${name}?`)) {
+            nodeService
+                .deleteById(id)
+                .then(()=>{setPersons(persons.filter(p => p.id !== id))})
+                .then(()=>{
+                    setMessage({text: "Person deleted!", successful: true });
+                    setTimeout(()=>{
+                        setMessage(null);
+                    }, 5000);
+                })
+        }
+    }
+
+    return (
+        <div>
+        <h2>Phonebook</h2>
+        <Notification message={message}/>
+        <Filter searchEntry={searchEntry} setSearchEntry={setSearchEntry} />
+        <h2>add a new</h2>
+        <PersonForm persons={persons} setPersons={setPersons} setMessage={setMessage} />
+        <h2>Numbers</h2>
+        <Persons persons={persons} searchEntry={searchEntry} deletePerson={deletePerson} />
+        </div>
+    )
 }
 
 export default App
