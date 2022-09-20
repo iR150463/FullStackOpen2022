@@ -52,7 +52,7 @@ app.get('/info', (req, res) => {
     `)
 })
 
-app.delete('/api/notes/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     notes = notes.filter(note => note.id !== id)
   
