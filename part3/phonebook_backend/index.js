@@ -1,9 +1,10 @@
 const { response } = require('express')
-//const bodyParser = require('body-parser')
+const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
-//bodyParser.urlencoded({ extended: false })
+app.use(express.json())
+app.use(morgan('tiny'))
 
 let notes = [
     { 
@@ -27,8 +28,6 @@ let notes = [
       "number": "39-23-6423122"
     }
 ]
-
-app.use(express.json())
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
