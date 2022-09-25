@@ -6,4 +6,4 @@ Course Link:
 https://fullstackopen.com/
 
 ## Part 3
-[Online Application of Phonebook](https://fly.io/apps/fly-builder-icy-feather-6393)
+[Online Application of Phonebook](https://fly-builder-icy-feather-6393.fly.dev/)
