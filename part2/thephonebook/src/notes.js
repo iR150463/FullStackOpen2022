@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/persons'
+const baseUrl = 'https://fly-builder-icy-feather-6393.fly.dev/api/persons'
 
 const getAll = () => {
     const request = axios.get(baseUrl)

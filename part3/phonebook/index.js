@@ -1,9 +1,12 @@
 const { response } = require('express')
 const morgan = require('morgan')
 const express = require('express')
+const cors = require('cors')
 const app = express()
 
+app.use(cors())
 app.use(express.json())
+app.use(express.static('build'))
 
 morgan.token('body', function (req, res) { return JSON.stringify(req.body)})
 app.use(morgan(function (tokens, req, res) {
@@ -50,9 +53,7 @@ let notes = [
     }
 ]
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello World!</h1>')
-})
+// app.get('/', (req, res) => { res.send('<h1>Hello World!</h1>')})
   
 app.get('/api/persons', (req, res) => {
     res.json(notes)
@@ -75,13 +76,6 @@ app.get('/info', (req, res) => {
         <p>Phonebook has info for ${notes.length} people.</p>
         <p>${d.toDateString()} ${d.toTimeString()}</p>
     `)
-})
-
-app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    notes = notes.filter(note => note.id !== id)
-  
-    res.status(204).end()
 })
 
 app.post('/api/persons', (req, res) => {
@@ -112,8 +106,37 @@ app.post('/api/persons', (req, res) => {
         res.json(note)
     }
 })
+
+app.put('api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const note = {"id": id, ...req.body};
+    
+    if (!note.name && !note.number) {
+        return res.status(400).json({ 
+            error: 'name and number are missing'
+        })
+    } else if (!note.name) {
+        return res.status(400).json({ 
+            error: 'name is missing'
+        })
+    } else if (!note.number) {
+        return res.status(400).json({ 
+            error: 'number is missing'
+        })
+    } else {
+        notes = notes.filter(n => n.id !== id).push(note)
+        res.status(204).end()
+    }
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    notes = notes.filter(note => note.id !== id)
   
-const PORT = 3001
-    app.listen(PORT, () => {
+    res.status(204).end()
+})
+  
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
